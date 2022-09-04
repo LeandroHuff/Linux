@@ -1,0 +1,169 @@
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+# User specific environment
+if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]
+then
+    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+fi
+export PATH
+
+# Uncomment the following line if you don't like systemctl's auto-paging feature:
+# export SYSTEMD_PAGER=
+
+# User specific aliases and functions
+if [ -d ~/.bashrc.d ]; then
+	for rc in ~/.bashrc.d/*; do
+		if [ -f "$rc" ]; then
+			. "$rc"
+		fi
+	done
+fi
+
+unset rc
+
+# # ex - archive extractor
+# # usage: ex <file>
+ex ()
+{
+ if [ -f $1 ] ; then
+   case $1 in
+     *.tar.bz2)   tar xjf $1   ;;
+     *.tar.gz)    tar xzf $1   ;;
+     *.bz2)       bunzip2 $1   ;;
+     *.rar)       unrar x $1     ;;
+     *.gz)        gunzip $1    ;;
+     *.tar)       tar xf $1    ;;
+     *.tbz2)      tar xjf $1   ;;
+     *.tgz)       tar xzf $1   ;;
+     *.zip)       unzip $1     ;;
+     *.Z)         uncompress $1;;
+     *.7z)        7z x $1      ;;
+     *)           echo "'$1' cannot be extracted via ex()" ;;
+   esac
+ else
+   echo "'$1' is not a valid file"
+ fi
+}
+
+#Performing system update
+fedora-update ()
+{
+    sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-38-primary
+    sudo dnf makecache -y
+    sudo dnf upgrade --refresh -y
+}
+
+fedora-full-update ()
+{
+    
+    fedora-update
+    sudo dnf upgrade --bugfix -y
+    sudo dnf upgrade --enhancement -y
+    sudo dnf upgrade --newpackage -y
+    sudo dnf upgrade --security -y
+    sudo dnf upgrade --sec-severity Critical -y
+    sudo dnf upgrade --sec-severity Important -y
+    sudo dnf upgrade --sec-severity Moderate -y
+    sudo dnf upgrade --sec-severity Low -y
+    sudo dnf install dnf-plugin-system-upgrade -y
+}
+#Performing system upgrade
+fedora-upgrade () 
+{
+    fedora-full-update
+    sudo dnf system-upgrade download --releasever=38 -y
+    sudo dnf distro-sync -y
+    sudo dnf system-upgrade reboot -y
+}
+
+#Resolving post-upgrade issues
+#Rebuilding the RPM database
+fedora-rebuild-rpm-database ()
+{
+    sudo rpm --rebuilddb
+    sudo dnf distro-sync -y
+    sudo dnf distro-sync --allowerasing -y
+}
+
+#Optional post-upgrade tasks
+#Update system configuration files
+fedora-update-config ()
+{
+    sudo dnf install rpmconf -y
+    sudo rpmconf -a
+}
+
+#Clean-up retired package
+fedora-clean-packages ()
+{
+    sudo dnf install remove-retired-packages -y
+    sudo remove-retired-packages
+}
+
+#Clean-up old packages
+fedora-clean-old-packages ()
+{
+    sudo dnf repoquery --unsatisfied -y
+    sudo dnf repoquery --duplicates -y
+    sudo dnf list extras -y
+    sudo dnf autoremove -y
+}
+
+#Clean-Up Old Kernels
+fedora-clean-old-kernels ()
+{
+    old_kernels=($(sudo dnf repoquery --installonly --latest-limit=-1 -q -y))
+    if [ "${#old_kernels[@]}" -eq 0 ]; then
+        echo "No old kernels found"
+        exit 0
+    fi
+    if ! sudo dnf remove "${old_kernels[@]}" -y; then
+        echo "Failed to remove old kernels"
+        exit 1
+    fi
+    echo "Removed old kernels"
+}
+
+#Clean-up old symlinks
+fedora-clean-old-symlinks ()
+{
+    sudo dnf install symlinks -y
+    sudo symlinks -r /usr | grep dangling
+    sudo symlinks -r -d /usr
+}
+
+#Relabel files with the latest SELinux policy
+fedora-fixfiles-SELinux ()
+{
+    sudo fixfiles -B onboot
+}
+
+#PS1 setup
+#export PS1='[ \u@\h ]-[ \w ]-[ $? ] '
+
+export PS1='\[\e[0;97;42m\] \u@\h \[\e[0;32;100m\]\[\e[0;97;100m\] \w \[\e[0;90;101m\]\[\e[0;97;101m\] $? \[\e[0;91;49m\]\[\e[39m\] '
+
+alias cls='clear'
+alias dir='ls'
+alias del='rm -i'
+alias ls='ls --color=auto'
+alias ll='ls -l'
+alias la='ls -a'
+alias lh='ls -h'
+alias lha='ls -lha'
+alias ..='cd ..'
+alias rf='rm -i'
+alias rd='rm -i -r'
+alias rm='rm -i'
+alias md='mkdir'
+alias cp='cp -i'
+alias mv='mv -i'
+alias text-browser='w3m'
+alias gui-browser='firefox'
+alias edit='gnome-text-editor'
+
