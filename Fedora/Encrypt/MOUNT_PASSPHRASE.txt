@@ -1,0 +1,25 @@
+************************************************************************
+YOU SHOULD RECORD YOUR MOUNT PASSPHRASE AND STORE IT IN A SAFE LOCATION.
+  ecryptfs-unwrap-passphrase ~/.ecryptfs/wrapped-passphrase
+THIS WILL BE REQUIRED IF YOU NEED TO RECOVER YOUR DATA AT A LATER TIME.
+************************************************************************
+
+========================================================================
+Some Important Notes!
+
+ 1. The file encryption appears to have completed successfully, however,
+    visita MUST LOGIN IMMEDIATELY, _BEFORE_THE_NEXT_REBOOT_,
+    TO COMPLETE THE MIGRATION!!!
+
+ 2. If visita can log in and read and write their files, then the migration is complete,
+    and you should remove /home/visita.fbDcerNl.
+    Otherwise, restore /home/visita.fbDcerNl back to /home/visita.
+
+ 3. visita should also run 'ecryptfs-unwrap-passphrase' and record
+    their randomly generated mount passphrase as soon as possible.
+
+ 4. To ensure the integrity of all encrypted data on this system, you
+    should also encrypt swap space with 'ecryptfs-setup-swap'.
+========================================================================
+
+

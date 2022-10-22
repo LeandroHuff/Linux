@@ -1,0 +1,19 @@
+========================================================================
+Some Important Notes!
+
+ 1. The file encryption appears to have completed successfully, however,
+    leandro MUST LOGIN IMMEDIATELY, _BEFORE_THE_NEXT_REBOOT_,
+    TO COMPLETE THE MIGRATION!!!
+
+ 2. If leandro can log in and read and write their files, then the migration is complete,
+    and you should remove /home/leandro.zVDstaz3.
+    Otherwise, restore /home/leandro.zVDstaz3 back to /home/leandro.
+
+ 3. leandro should also run 'ecryptfs-unwrap-passphrase' and record
+    their randomly generated mount passphrase as soon as possible.
+
+ 4. To ensure the integrity of all encrypted data on this system, you
+    should also encrypt swap space with 'ecryptfs-setup-swap'.
+========================================================================
+
+
